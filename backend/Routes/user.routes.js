@@ -84,3 +84,5 @@ userRouter.get("/logout", async (req, res) => {
     });
   }
 });
+
+module.exports = { userRouter };
