@@ -48,7 +48,7 @@ userRouter.post("/login", async (req, res) => {
               expiresIn: "7d",
             }
           );
-          res.status(200).send({ msg: "logged in successfully", token: token });
+          res.status(200).send({ msg: "logged in successfully", token: token, user });
           return;
         }
         if (err) {
