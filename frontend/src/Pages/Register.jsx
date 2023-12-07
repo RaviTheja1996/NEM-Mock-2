@@ -12,15 +12,20 @@ const Register = () => {
 
   const handleRegister = (e) => {
     e.preventDefault();
-    axios
-      .post(`https://grumpy-clam-beret.cyclic.app/api/register`, {
-        email,
-        password,
-        username,
-        avatar,
-      })
+    let res = axios.post(`https://grumpy-clam-beret.cyclic.app/api/register`, {
+      email,
+      password,
+      username,
+      avatar,
+    });
+    res
       .then((res) => {
-        console.log(res);
+        console.log("inside dot then");
+        console.log(res.data);
+      })
+      .catch((err) => {
+        console.log("in catch block");
+        console.log(err.message);
       });
   };
 
