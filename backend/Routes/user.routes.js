@@ -7,7 +7,7 @@ const { blacklistModel } = require("../models/blacklist.model");
 const userRouter = express.Router();
 
 userRouter.post("/register", async (req, res) => {
-  const { username, email, password } = req.body;
+  const { username, email, password, avatar } = req.body;
   const userExist = await UserModel.findOne({ email });
   if (userExist) {
     res.status(200).send({ msg: "User already exists, please login" });
@@ -20,7 +20,7 @@ userRouter.post("/register", async (req, res) => {
           .status(500)
           .send({ msg: "error while hashing password", error: err.message });
       } else {
-        const user = new UserModel({ username, email, password: hash });
+        const user = new UserModel({ username, email, password: hash, avatar });
         const new_user = await user.save();
         res
           .status(200)
