@@ -7,7 +7,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { Link as ReactRouterLink } from "react-router-dom";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 
@@ -26,9 +26,18 @@ const Login = () => {
       })
       .then((res) => {
         console.log(res.data);
-        dispatch({ type: "LOGIN_SUCCESS", payload: res.data.user });
+        dispatch({
+          type: "LOGIN_SUCCESS",
+          payload: { user: res.data.user, token: res.data.token },
+        });
       });
   };
+
+  //   useEffect(() => {
+  //     axios
+  //       .get("https://grumpy-clam-beret.cyclic.app/api/")
+  //       .then((res) => setUsers(res.data));
+  //   }, []);
 
   return (
     <form style={{ width: "90%", margin: "auto", marginTop: "2rem" }}>
