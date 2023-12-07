@@ -164,3 +164,5 @@ blogRouter.get(`*?sort`, async (req, res) => {
     });
   }
 });
+
+module.exports = { blogRouter };
