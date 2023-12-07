@@ -16,16 +16,15 @@ userRouter.post("/register", async (req, res) => {
   try {
     bcrypt.hash(password, 5, async (err, hash) => {
       if (err) {
-        res
+        return res
           .status(500)
           .send({ msg: "error while hashing password", error: err.message });
-      } else {
-        const user = new UserModel({ username, email, password: hash, avatar });
-        const new_user = await user.save();
-        res
-          .status(200)
-          .send({ msg: "user registered successfully", new_user: new_user });
       }
+      const user = new UserModel({ username, email, password: hash, avatar });
+      const new_user = await user.save();
+      res
+        .status(200)
+        .send({ msg: "user registered successfully", new_user: new_user });
     });
   } catch (err) {
     res
@@ -48,7 +47,9 @@ userRouter.post("/login", async (req, res) => {
               expiresIn: "7d",
             }
           );
-          res.status(200).send({ msg: "logged in successfully", token: token, user });
+          res
+            .status(200)
+            .send({ msg: "logged in successfully", token: token, user });
           return;
         }
         if (err) {
