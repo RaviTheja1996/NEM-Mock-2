@@ -1,6 +1,7 @@
 const initialState = {
   isAuth: false,
   user: {},
+  token: "",
 };
 
 export const reducer = (state = initialState, { type, payload }) => {
@@ -9,7 +10,12 @@ export const reducer = (state = initialState, { type, payload }) => {
       return { ...state, isAuth: false };
     }
     case "LOGIN_SUCCESS": {
-      return { ...state, isAuth: true, user: payload };
+      return {
+        ...state,
+        isAuth: true,
+        user: payload.user,
+        token: payload.token,
+      };
     }
     default: {
       return state;
