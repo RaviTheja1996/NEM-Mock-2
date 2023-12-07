@@ -85,4 +85,15 @@ userRouter.get("/logout", async (req, res) => {
   }
 });
 
+userRouter.get("/", async (req, res) => {
+  try {
+    const users = await UserModel.find();
+    res.status(200).send(users);
+  } catch (err) {
+    res
+      .status(500)
+      .send({ msg: "error while fetching users", error: err.message });
+  }
+});
+
 module.exports = { userRouter };
