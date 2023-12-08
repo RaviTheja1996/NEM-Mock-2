@@ -4,6 +4,7 @@ const blogSchema = mongoose.Schema(
   {
     username: String,
     userID: String,
+    avatar: String,
     title: String,
     content: String,
     category: String,
