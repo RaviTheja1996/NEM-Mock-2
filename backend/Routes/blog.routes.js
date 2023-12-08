@@ -22,7 +22,7 @@ blogRouter.post("/", async (req, res) => {
 });
 
 blogRouter.get("/", async (req, res) => {
-  const { category, sort, order } = req.query;
+  const { category, sort, order, title } = req.query;
   try {
     let blogs = await blogModel.find();
     if (category) {
@@ -35,6 +35,9 @@ blogRouter.get("/", async (req, res) => {
       else if (order === "desc") {
         blogs = await blogModel.find().sort({ date: -1 });
       }
+    }
+    else if (title) {
+      blogs = await blogModel.find({ title });
     }
     else if (category && sort) {
       if (order === "asc") {
