@@ -18,7 +18,8 @@ import {
   Select,
   Box,
   VStack,
-  Image
+  Image,
+  useToast
 } from "@chakra-ui/react";
 import { Search2Icon } from "@chakra-ui/icons";
 import React, { useEffect, useMemo, useState } from "react";
@@ -31,12 +32,25 @@ const Blogs = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [category, setCategory] = useState("");
+  const [filterCategory, setFilterCategory] = useState("");
+  const [sortOrder, setSortOrder] = useState("");
   const dispatch = useDispatch();
 
   const username = useSelector((store) => store.logged_user.username);
   const avatar = useSelector((store) => store.logged_user.avatar);
   const token = useSelector((store) => store.token);
   const blogs = useSelector((store) => store.blogs);
+  const toast = useToast();
+
+  // const setFilterCategoryCall = (value, callback) => {
+  //   setFilterCategory(prevCategory => value);
+  //   if (callback) callback();
+  // };
+
+  // const setSortOrderCall = (value, callback) => {
+  //   setSortOrder(prevOrder => value);
+  //   if (callback) callback();
+  // };
 
   const config = useMemo(() => {
     return {
@@ -47,6 +61,8 @@ const Blogs = () => {
     };
   }, [token]);
 
+  let blogFetchUrl = `${process.env.REACT_APP_API_URL}/api/blogs/`;
+
   const handleSubmit = (e) => {
     e.preventDefault();
     let postData = {
@@ -55,17 +71,26 @@ const Blogs = () => {
     axios.post(`${process.env.REACT_APP_API_URL}/api/blogs/`, postData, config)
       .then((res) => {
         console.log(res.data);
+        toast({
+          title: `${res.data.msg}`,
+          status: 'success',
+          duration: 2000,
+          position: "top",
+          isClosable: true,
+        })
+        blogsFetch();
       })
       .catch((err) => {
         console.log(`error in handleSubmit catch block`);
         console.log(err);
-      })
+      });
   }
 
   const handleSearch = () => {
-    axios.get(`${process.env.REACT_APP_API_URL}/api/blogs?title=${searchKey}`)
+    axios.get(`${blogFetchUrl}?title=${searchKey}`, config)
       .then((res) => {
         console.log(res.data);
+        dispatch({ type: "BLOGS_DATA_FETCH", payload: res.data });
       })
       .catch((err) => {
         console.log(`error in handleSearch catch block`);
@@ -73,15 +98,33 @@ const Blogs = () => {
       })
   }
 
-  useEffect(() => {
-    axios.get(`${process.env.REACT_APP_API_URL}/api/blogs/`, config).then((res) => {
+  const blogsFetch = () => {
+    if (filterCategory) {
+      blogFetchUrl = `${process.env.REACT_APP_API_URL}/api/blogs/`;
+      blogFetchUrl += `?category=${filterCategory}`;
+    }
+    if (sortOrder) {
+      blogFetchUrl = `${process.env.REACT_APP_API_URL}/api/blogs/`;
+      blogFetchUrl += `?sort=date&order=${sortOrder}`;
+    }
+    if (filterCategory && sortOrder) {
+      blogFetchUrl = `${process.env.REACT_APP_API_URL}/api/blogs/`;
+      blogFetchUrl += `?category=${filterCategory}&sort=date&order=${sortOrder}`;
+    }
+    console.log(blogFetchUrl);
+    axios.get(blogFetchUrl, config).then((res) => {
       console.log(res.data);
       dispatch({ type: "BLOGS_DATA_FETCH", payload: res.data });
     }).catch((err) => {
-      console.log(`error in useEffect fetchBlogs catch block`);
+      console.log(`error in fetchBlogs catch block`);
       console.log(err);
     })
-  }, [dispatch, config]);
+  };
+
+  useEffect(() => {
+    blogsFetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterCategory, sortOrder]);
 
   return (
     <>
@@ -137,14 +180,31 @@ const Blogs = () => {
             <Button onClick={handleSearch} bgColor={"lightblue"} _hover={{ bgColor: "lightblue" }}><Search2Icon /></Button>
           </InputRightElement>
         </InputGroup>
+        <Select placeholder='Filter by category' value={filterCategory} onChange={(e) => { setFilterCategory(e.target.value); }}>
+          <option value='Business'>Business</option>
+          <option value='Tech'>Tech</option>
+          <option value='Lifestyle'>Lifestyle</option>
+          <option value='Entertainment'>Entertainment</option>
+        </Select>
+        <Select placeholder='sort by date' value={sortOrder} onChange={(e) => { setSortOrder(e.target.value); }}>
+          <option value='asc'>Ascending</option>
+          <option value='desc'>Descending</option>
+        </Select>
+        <Button onClick={() => {
+          setFilterCategory("");
+          setSortOrder("");
+          blogsFetch();
+        }}>Reset</Button>
       </Flex>
-      <Flex flexDirection="column" gap="1rem">
+      <Flex flexDirection="column" gap="1rem" mt="2rem" w="60%" mx="auto">
         {blogs?.map((el, ind) => {
-          return <Box key={ind}>
-            <VStack spacing={6}>
+          return <Box key={ind} boxShadow={"rgba(0, 0, 0, 0.24) 0px 3px 8px"}>
+            <VStack spacing={4}>
               <HStack spacing={6}>
                 <Image src={el.avatar} w="3rem" h="3rem" />
+                <Text fontSize={"xl"}>{el.username}</Text>
               </HStack>
+              <Text fontSize={"lg"}>{`content: ${el.content}`}</Text>
             </VStack>
           </Box>
         })}

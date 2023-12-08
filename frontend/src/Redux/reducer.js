@@ -23,7 +23,7 @@ export const reducer = (state = initialState, { type, payload }) => {
     case "REGISTER": {
       return { ...state, registered_user: payload };
     }
-    case "BLOG_DATA_FETCH": {
+    case "BLOGS_DATA_FETCH": {
       return { ...state, blogs: payload }
     }
     default: {
