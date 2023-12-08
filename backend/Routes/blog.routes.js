@@ -24,28 +24,26 @@ blogRouter.post("/", async (req, res) => {
 blogRouter.get("/", async (req, res) => {
   const { category, sort, order, title } = req.query;
   try {
-    let blogs = await blogModel.find();
-    if (category) {
-      blogs = await blogModel.find({ category });
-    }
-    else if (sort) {
-      if (order === "asc") {
-        blogs = await blogModel.find().sort({ date: 1 });
-      }
-      else if (order === "desc") {
-        blogs = await blogModel.find().sort({ date: -1 });
-      }
-    }
-    else if (title) {
+    let blogs = [];
+
+    if (title) {
       blogs = await blogModel.find({ title });
-    }
-    else if (category && sort) {
+    } else if (category && sort) {
       if (order === "asc") {
         blogs = await blogModel.find({ category }).sort({ date: 1 });
-      }
-      else if (order === "desc") {
+      } else if (order === "desc") {
         blogs = await blogModel.find({ category }).sort({ date: -1 });
       }
+    } else if (category) {
+      blogs = await blogModel.find({ category });
+    } else if (sort) {
+      if (order === "asc") {
+        blogs = await blogModel.find().sort({ date: 1 });
+      } else if (order === "desc") {
+        blogs = await blogModel.find().sort({ date: -1 });
+      }
+    } else {
+      blogs = await blogModel.find();
     }
     res.status(200).send(blogs);
   } catch (err) {
