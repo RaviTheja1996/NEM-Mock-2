@@ -5,22 +5,25 @@ import {
   Input,
   Link as ChakraLink,
   Text,
+  HStack,
+  useToast
 } from "@chakra-ui/react";
-import { Link as ReactRouterLink } from "react-router-dom";
-import React, { useEffect, useState } from "react";
+import { Link as ReactRouterLink, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [users, setUsers] = useState([]);
   const dispatch = useDispatch();
+  const toast = useToast();
+  const navigate = useNavigate();
 
   const handleLogin = (e) => {
     e.preventDefault();
     axios
-      .post(`https://grumpy-clam-beret.cyclic.app/api/login`, {
+      .post(`${process.env.REACT_APP_API_URL}/api/login`, {
         email,
         password,
       })
@@ -30,6 +33,14 @@ const Login = () => {
           type: "LOGIN_SUCCESS",
           payload: { user: res.data.user, token: res.data.token },
         });
+        toast({
+          title: 'Login success',
+          position: "top",
+          status: 'success',
+          duration: 2000,
+          isClosable: true,
+        });
+        navigate("/blogs");
       });
   };
 
@@ -40,39 +51,45 @@ const Login = () => {
   //   }, []);
 
   return (
-    <form style={{ width: "90%", margin: "auto", marginTop: "2rem" }}>
+    <form style={{ width: "50%", margin: "auto", marginTop: "2rem", backgroundColor: "#DCDBD8", paddingTop: "1rem", paddingBottom: "1rem" }}>
       <Flex
         justifyContent={"center"}
         flexDirection={"column"}
         alignItems={"center"}
         gap="1rem"
       >
-        <label>
-          Email :
+        <HStack spacing={6} w="70%">
+          <Text>
+            Email
+          </Text>
           <Input
             type="email"
             placeholder="Enter email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            bgColor={"white"}
           ></Input>
-        </label>
-        <label>
-          Password :
+        </HStack>
+        <HStack spacing={6} w="70%">
+          <Text>
+            Password
+          </Text>
           <Input
             type="password"
             placeholder="Enter password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            bgColor={"white"}
           ></Input>
-        </label>
-        <Button onClick={handleLogin} type="submit">
+        </HStack>
+        <Button onClick={handleLogin} type="submit" mt="1rem" bgColor={"lightgreen"} _hover={{ bgColor: "lightgreen" }}>
           Login
         </Button>
-        <Text fontSize={"md"}>Not Registered ?</Text>
-        <br />
-        <ChakraLink as={ReactRouterLink} to="/register" color={"blue"}>
-          Register
-        </ChakraLink>
+        <Text fontSize={"md"}>Not Registered ?{" "}
+          <ChakraLink as={ReactRouterLink} to="/register" color={"blue"}>
+            Register
+          </ChakraLink>
+        </Text>
       </Flex>
     </form>
   );

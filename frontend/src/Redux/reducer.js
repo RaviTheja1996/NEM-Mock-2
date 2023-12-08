@@ -1,6 +1,9 @@
 const initialState = {
   isAuth: false,
-  user: {},
+  logged_user: {},
+  isLoading: false,
+  registered_user: {},
+  blogs: [],
   token: "",
 };
 
@@ -13,9 +16,15 @@ export const reducer = (state = initialState, { type, payload }) => {
       return {
         ...state,
         isAuth: true,
-        user: payload.user,
+        logged_user: payload.user,
         token: payload.token,
       };
+    }
+    case "REGISTER": {
+      return { ...state, registered_user: payload };
+    }
+    case "BLOG_DATA_FETCH": {
+      return { ...state, blogs: payload }
     }
     default: {
       return state;
