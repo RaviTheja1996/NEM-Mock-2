@@ -22,8 +22,28 @@ blogRouter.post("/", async (req, res) => {
 });
 
 blogRouter.get("/", async (req, res) => {
+  const { category, sort, order } = req.query;
   try {
-    const blogs = await blogModel.find({ username: req.body.username });
+    let blogs = await blogModel.find();
+    if (category) {
+      blogs = await blogModel.find({ category });
+    }
+    else if (sort) {
+      if (order === "asc") {
+        blogs = await blogModel.find().sort({ date: 1 });
+      }
+      else if (order === "desc") {
+        blogs = await blogModel.find().sort({ date: -1 });
+      }
+    }
+    else if (category && sort) {
+      if (order === "asc") {
+        blogs = await blogModel.find({ category }).sort({ date: 1 });
+      }
+      else if (order === "desc") {
+        blogs = await blogModel.find({ category }).sort({ date: -1 });
+      }
+    }
     res.status(200).send(blogs);
   } catch (err) {
     res.status(500).send({
